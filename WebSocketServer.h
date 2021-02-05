@@ -83,6 +83,7 @@ public:
     // Write data to the stream
     void sendData(const char *str);
     void sendData(String str);
+	void sendData(const uint8_t *buff, size_t len);
     
     // Disconnect user gracefully.
     void disconnectStream();
@@ -113,6 +114,7 @@ private:
 
     void sendEncodedData(char *str, uint8_t);
     void sendEncodedData(String str, uint8_t);
+	void sendEncodedData(const uint8_t *buf, size_t len, uint8_t opcode );
     
     // Disconnect user gracefully.
     void terminateStream(uint8_t);

@@ -450,6 +450,22 @@ void WebSocketServer::sendData(String str) {
     }
 }
 
+void WebSocketServer::sendData(const uint8_t *buf, size_t len ) {
+#ifdef DEBUGGING
+    Serial.print(F("Sending data: "));
+    Serial.println(str);
+#endif
+    if (socket_client->connected()) {
+        if (hixie76style) {
+            socket_client->write(0x00); // Frame start
+            socket_client->write(buf, len);
+            socket_client->write(0xFF); // Frame end        
+        } else {
+            sendEncodedData(buf, len, 0x81);
+        }
+    }
+}
+
 int WebSocketServer::timedRead() {
   while (!socket_client->available()) {
     delay(20);  
@@ -483,6 +499,22 @@ void WebSocketServer::sendEncodedData(String str, uint8_t opcode) {
     str.toCharArray(cstr, size);
 
     sendEncodedData(cstr, opcode);
+}
+
+void WebSocketServer::sendEncodedData(const uint8_t *buf, size_t len, uint8_t opcode) {
+    // string type
+    socket_client->write(opcode);
+
+    // NOTE: no support for > 16-bit sized messages
+    if (len > 125) {
+        socket_client->write(126);
+        socket_client->write((uint8_t) (len >> 8));
+        socket_client->write((uint8_t) (len & 0xFF));
+    } else {
+        socket_client->write((uint8_t) len);
+    }
+
+	socket_client->write( buf, len );
 }
 
 void WebSocketServer::sendPing(String str) {
