@@ -200,7 +200,9 @@ bool WebSocketServer::analyzeRequest(int bufferLength) {
             SHA1Context sha;
             int err;
             uint8_t Message_Digest[20];
+#ifdef DEBUGGING
             Serial.println("Calculating");
+#endif
             err = SHA1Reset(&sha);
             err = SHA1Input(&sha, reinterpret_cast<const uint8_t *>(newkey.c_str()), newkey.length());
             err = SHA1Result(&sha, Message_Digest);
@@ -212,14 +214,15 @@ bool WebSocketServer::analyzeRequest(int bufferLength) {
             result[20] = '\0';
 
             base64_encode(b64Result, result, 20);
+#ifdef DEBUGGING
             Serial.println("Sending");
-            char * response = (char*)malloc(200);
-            sprintf(response, "HTTP/1.1 101 Web Socket Protocol Handshake\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: %s\r\n\r\n", b64Result);
-            socket_client->print(response);
+#endif
+			char grcResponse[200];
+            sprintf(grcResponse, "HTTP/1.1 101 Web Socket Protocol Handshake\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: %s\r\n\r\n", b64Result);
+            socket_client->print(grcResponse);
 #ifdef DEBUGGING
             Serial.print(response);
 #endif
-            free(response);
             return true;
         } else {
             // something went horribly wrong
