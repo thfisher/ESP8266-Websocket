@@ -461,7 +461,7 @@ void WebSocketServer::sendData(const uint8_t *buf, size_t len ) {
             socket_client->write(buf, len);
             socket_client->write(0xFF); // Frame end        
         } else {
-            sendEncodedData(buf, len, 0x81);
+            sendEncodedData(buf, len, 0x82);
         }
     }
 }
