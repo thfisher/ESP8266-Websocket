@@ -277,7 +277,7 @@ String WebSocketServer::handleHixie76Stream() {
 
 #endif
 
-String WebSocketServer::handleStream() {
+String WebSocketServer::handleStream( int8_t *pi8Type ) {
     uint8_t msgtype;
     unsigned int length;
     uint8_t mask[4];
@@ -285,9 +285,14 @@ String WebSocketServer::handleStream() {
 
     // String to hold bytes sent by client to server.
     String socketString;
+	if( pi8Type )
+		*pi8Type = 0;
 
     if (socket_client->connected() && socket_client->available()) {
         msgtype = timedRead();
+		if( pi8Type )
+			*pi8Type = msgtype & 0x0f;
+
         if (msgtype == 0x88) {
             disconnectStream();
             return socketString;
@@ -407,15 +412,15 @@ void WebSocketServer::disconnectStream() {
     socket_client->stop();
 }
 
-String WebSocketServer::getData() {
+String WebSocketServer::getData( int8_t *pi8OpCode ) {
     String data;
 
     if (hixie76style) {
 #ifdef SUPPORT_HIXIE_76
-        data = handleHixie76Stream();
+        data = handleHixie76Stream( pi8OpCode );
 #endif
     } else {
-        data = handleStream();
+        data = handleStream( pi8OpCode );
     }
 
     return data;
@@ -456,7 +461,6 @@ void WebSocketServer::sendData(String str) {
 void WebSocketServer::sendData(const uint8_t *buf, size_t len ) {
 #ifdef DEBUGGING
     Serial.print(F("Sending data: "));
-    Serial.println(str);
 #endif
     if (socket_client->connected()) {
         if (hixie76style) {

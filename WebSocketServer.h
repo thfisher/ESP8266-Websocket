@@ -78,7 +78,7 @@ public:
     bool handshake(Client &client);
     
     // Get data off of the stream
-    String getData();
+    String getData( int8_t *pi8opCode = 0 );
 
     // Write data to the stream
     void sendData(const char *str);
@@ -108,7 +108,7 @@ private:
 #ifdef SUPPORT_HIXIE_76
     String handleHixie76Stream();
 #endif
-    String handleStream();    
+	String handleStream( int8_t *pi8Type = 0 );
     
     int timedRead();
 
