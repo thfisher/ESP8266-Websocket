@@ -281,7 +281,7 @@ void WebSocketClient::sendData(String str, uint8_t opcode) {
 
 int WebSocketClient::timedRead() {
   while (!socket_client->available()) {
-    delay(20);  
+    delay(5);  
   }
 
   return socket_client->read();

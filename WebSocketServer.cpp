@@ -475,7 +475,7 @@ void WebSocketServer::sendData(const uint8_t *buf, size_t len ) {
 
 int WebSocketServer::timedRead() {
   while (!socket_client->available()) {
-    delay(20);  
+    delay(5);  
   }
 
   return socket_client->read();
